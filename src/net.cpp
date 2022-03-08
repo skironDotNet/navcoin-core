@@ -867,16 +867,8 @@ void SocketSendData(CNode *pnode)
                 // could not send full message; stop sending more
                 break;
             }
-        } else {
-            if (nBytes < 0) {
-                // error
-                int nErr = WSAGetLastError();
-                if (nErr != WSAEWOULDBLOCK && nErr != WSAEMSGSIZE && nErr != WSAEINTR && nErr != WSAEINPROGRESS)
-                {
-                    LogPrintf("socket send error %s\n", NetworkErrorString(nErr));
-                    pnode->CloseSocketDisconnect();
-                }
-            }
+        } else { //nBytes == 0 OR nBytes < 0 //I don't think we can ever have negative nBytes, either way just close the socket, to release CPU
+            pnode->CloseSocketDisconnect();
             // couldn't send anything at all
             break;
         }
